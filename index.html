@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Papu’s Blind-Chess Victory | A Tribute to My Husband</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Google Sans"', '"Google Sans Text"', '"Product Sans"', '"DM Sans"', 'sans-serif'],
+                    },
+                    colors: {
+                        surface: {
+                            light: '#F8F9FA',
+                            dark: '#131314',
+                        },
+                        onSurface: {
+                            light: '#1F1F1F',
+                            dark: '#E3E3E3',
+                        },
+                        primary: {
+                            light: '#0B57D0',
+                            dark: '#A8C7FA',
+                        },
+                        onPrimary: {
+                            light: '#FFFFFF',
+                            dark: '#062E6F',
+                        },
+                        secondary: {
+                            light: '#444746',
+                            dark: '#C4C7C5',
+                        },
+                        surfaceContainer: {
+                            light: '#FFFFFF',
+                            dark: '#1E1F20',
+                        },
+                        surfaceContainerLow: {
+                            light: '#F1F3F4',
+                            dark: '#1A1A1C',
+                        },
+                        outline: {
+                            light: '#747775',
+                            dark: '#8E918F',
+                        },
+                        primaryGold: '#FBBC04'
+                    },
+                    boxShadow: {
+                        'elevation-1': '0 1px 2px 0 rgba(0, 0, 0, 0.3), 0 1px 3px 1px rgba(0, 0, 0, 0.15)',
+                        'elevation-2': '0 1px 2px 0 rgba(0, 0, 0, 0.3), 0 2px 6px 2px rgba(0, 0, 0, 0.15)',
+                        'elevation-3': '0 1px 3px 0 rgba(0, 0, 0, 0.3), 0 4px 8px 3px rgba(0, 0, 0, 0.15)',
+                        'elevation-4': '0 2px 3px 0 rgba(0, 0, 0, 0.3), 0 6px 10px 4px rgba(0, 0, 0, 0.15)',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        @font-face {
+            font-family: 'Google Sans';
+            src: local('Google Sans'), local('Product Sans');
+            font-weight: 400;
+        }
+        @font-face {
+            font-family: 'Google Sans';
+            src: local('Google Sans Medium'), local('Product Sans Medium');
+            font-weight: 500;
+        }
+        @font-face {
+            font-family: 'Google Sans';
+            src: local('Google Sans Bold'), local('Product Sans Bold');
+            font-weight: 700;
+        }
+
+        * {
+            /* Strictly enforcing Google Sans typography */
+            font-family: "Google Sans", "Product Sans", "DM Sans", sans-serif !important;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            overflow-x: hidden;
+            width: 100%;
+            max-width: 100vw;
+        }
+
+        /* Animations */
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .animate-fade-in { animation: fadeIn 0.5s ease-out forwards; }
+        
+        @keyframes scaleUp { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+        .animate-scale-up { animation: scaleUp 0.4s cubic-bezier(0.2, 0, 0, 1) forwards; }
+
+        @keyframes checkmatePop {
+            0% { transform: scale(0.5); opacity: 0; }
+            60% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .animate-checkmate-pop { animation: checkmatePop 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+        
+        @keyframes bounceSlight { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        .animate-bounce-slight { animation: bounceSlight 2s ease-in-out infinite; }
+        
+        @keyframes floatParticle {
+            0% { transform: translateY(0) scale(1); opacity: 1; }
+            100% { transform: translateY(-100px) scale(0); opacity: 0; }
+        }
+        .animate-float { animation: floatParticle linear forwards; }
+
+        /* Custom Scrollbar for move list */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background-color: rgba(150, 150, 150, 0.3); border-radius: 10px; }
+
+        :root { color-scheme: light; }
+        html.dark { color-scheme: dark; }
+        body, nav, section, footer, .bg-surface-light, .dark .bg-surface-dark {
+            transition: background-color .35s ease, color .35s ease, border-color .35s ease;
+        }
+        #themeToggle { position: relative; overflow: hidden; transition: transform .25s ease, background-color .25s ease; }
+        #themeToggle:active { transform: rotate(-12deg) scale(.94); }
+        .chess-accent { background: radial-gradient(circle at 50% 0%, rgba(251,188,4,.12), transparent 65%); }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+        }
+
+
+        @keyframes chessPieceMove {
+            0% { transform: translate(var(--move-x, 0px), var(--move-y, 0px)) scale(1.025); }
+            72% { transform: translate(0, 0) scale(1.055); }
+            100% { transform: translate(0, 0) scale(1); }
+        }
+        .piece-moving { animation: chessPieceMove 460ms cubic-bezier(.2,.82,.2,1) both; will-change: transform; }
+        .checkmate-square { box-shadow: inset 0 0 0 4px #fbbf24, inset 0 0 28px rgba(251,191,36,.7); }
+        #mate-overlay { animation: mateBackdropIn 320ms ease-out both; }
+        @keyframes mateBackdropIn { from { opacity: 0; backdrop-filter: blur(0); } to { opacity: 1; backdrop-filter: blur(5px); } }
+        .mate-card { animation: mateCardIn 620ms cubic-bezier(.16,1,.3,1) both; }
+        @keyframes mateCardIn { 0% { opacity: 0; transform: translateY(18px) scale(.86); } 68% { opacity: 1; transform: translateY(-3px) scale(1.025); } 100% { opacity: 1; transform: translateY(0) scale(1); } }
+        .mate-glow { animation: mateGlow 1.8s ease-in-out infinite alternate; }
+        @keyframes mateGlow { from { filter: drop-shadow(0 0 3px rgba(251,191,36,.25)); } to { filter: drop-shadow(0 0 16px rgba(251,191,36,.9)); } }
+        @media (prefers-reduced-motion: reduce) {
+            .piece-moving, .mate-card, #mate-overlay, .mate-glow { animation: none !important; }
+        }
+
+
+        .love-card {
+            background:
+              radial-gradient(ellipse at 8% 0%, rgba(251,188,4,.11), transparent 38%),
+              radial-gradient(ellipse at 100% 100%, rgba(244,63,94,.08), transparent 34%),
+              var(--letter-surface, #fff);
+            border: 1px solid rgba(148,163,184,.22);
+            box-shadow: 0 18px 44px rgba(31,41,55,.10), 0 3px 9px rgba(31,41,55,.08), inset 0 1px 0 rgba(255,255,255,.88);
+        }
+        html.dark .love-card {
+            --letter-surface: #1e1f20;
+            background:
+              radial-gradient(ellipse at 8% 0%, rgba(251,188,4,.12), transparent 38%),
+              radial-gradient(ellipse at 100% 100%, rgba(244,63,94,.12), transparent 34%),
+              var(--letter-surface);
+            border-color: rgba(255,255,255,.09);
+            box-shadow: 0 18px 44px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.04);
+        }
+        .heart-medallion {
+            background: linear-gradient(145deg, #fff5f5, #ffdfe4 55%, #ffc7d1);
+            box-shadow: 7px 8px 16px rgba(190,24,93,.13), -3px -3px 8px rgba(255,255,255,.92), inset 0 1px 2px rgba(255,255,255,.9);
+        }
+        .heart-icon {
+            filter: drop-shadow(0 3px 1px rgba(153,27,27,.24));
+            transform: translateY(-1px);
+        }
+        html.dark .heart-medallion {
+            background: linear-gradient(145deg, #51212d, #351923 60%, #24151a);
+            box-shadow: 6px 7px 16px rgba(0,0,0,.28), inset 0 1px 2px rgba(255,255,255,.08);
+        }
+        .love-card h2 { letter-spacing: -.035em; line-height: 1.2; }
+        .love-card .letter-copy p { margin: 0; }
+        .love-card .letter-copy { display: grid; gap: 1.15rem; }
+        @media (max-width: 640px) {
+            .love-card { padding: 1.25rem !important; }
+            .love-card h2 { font-size: clamp(1.45rem, 6vw, 2rem); }
+        }
+
+
+        /* Tiny, discreet monograms printed directly on each chess piece */
+        .piece-monogram { pointer-events: none; }
+        #hero-board-container svg text, #main-board-container svg text {
+            paint-order: stroke fill;
+            filter: drop-shadow(0 1px 1px rgba(0,0,0,.65));
+            pointer-events: none;
+            user-select: none;
+        }
+        #hero-board-container .piece, #main-board-container .piece {
+            transform-origin: center;
+        }
+
+    </style>
+</head>
+<body class="bg-surface-light text-onSurface-light dark:bg-surface-dark dark:text-onSurface-dark transition-colors duration-300 min-h-screen">
+
+    <nav class="fixed top-0 w-full p-3 sm:p-4 flex justify-between items-center z-50 bg-surface-light/80 dark:bg-surface-dark/80 backdrop-blur-md border-b border-outline-light/10 dark:border-outline-dark/10 transition-colors">
+        <div class="flex items-center gap-2 font-bold tracking-tight text-base sm:text-lg">
+            <i data-lucide="crown" class="w-5 h-5 text-primaryGold shrink-0"></i>
+            <span class="truncate">♛ Papu’s Blind-Chess Victory ❤️</span>
+        </div>
+        <button id="themeToggle" class="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors shrink-0" aria-label="Toggle theme">
+            <i data-lucide="moon" id="themeIcon" class="w-5 h-5 transition-transform duration-500"></i>
+        </button>
+    </nav>
+
+    <header class="pt-24 pb-8 px-4 sm:px-6 min-h-0 flex flex-col justify-center max-w-7xl mx-auto w-full">
+        <div class="grid lg:grid-cols-2 gap-10 lg:gap-12 items-center w-full">
+            <div class="order-2 lg:order-1 text-center lg:text-left w-full">
+                <span class="inline-block py-1.5 px-3 sm:px-4 rounded-full bg-primary-light/10 dark:bg-primary-dark/20 text-primary-light dark:text-primary-dark text-xs sm:text-sm font-bold tracking-widest mb-4 sm:mb-6">
+                    ♟  A LITTLE SURPRISE FOR MY  HUBBY
+                </span>
+                <h1 class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tighter leading-[1.1] mb-4 sm:mb-6">
+                    My Papu,<br />
+                    <span class="text-secondary-light dark:text-secondary-dark">My Genius,</span><br />
+                    <span class="text-primaryGold">My Champion,</span>
+                </h1>
+                <p class="text-lg sm:text-xl md:text-2xl text-secondary-light dark:text-secondary-dark mb-6 sm:mb-8 max-w-xl mx-auto lg:mx-0 leading-relaxed">
+                    One invisible board. One brilliant mind. One unforgettable checkmate. A million reasons I’m proud of you,
+                </p>
+                <p class="text-base sm:text-lg font-medium text-onSurface-light dark:text-onSurface-dark mb-8 sm:mb-10 italic border-l-4 border-primary-light dark:border-primary-dark pl-4 text-left mx-auto max-w-xl lg:mx-0">
+                    “You amaze me every day. Being your wife is one of my greatest blessings, Kandama. ❤️”
+                </p>
+                <div class="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 justify-center lg:justify-start w-full">
+                    <button onclick="document.getElementById('replay').scrollIntoView({ behavior: 'smooth' })" class="bg-primary-light dark:bg-primary-dark text-onPrimary-light dark:text-onPrimary-dark px-6 sm:px-8 py-3 sm:py-4 rounded-full font-bold text-base sm:text-lg hover:shadow-elevation-2 hover:-translate-y-0.5 transition-all w-full sm:w-auto">
+                        See Your Winning Move
+                    </button>
+                    <button onclick="document.getElementById('love-letter').scrollIntoView({ behavior: 'smooth' })" class="px-6 sm:px-8 py-3 sm:py-4 rounded-full font-bold text-base sm:text-lg text-primary-light dark:text-primary-dark hover:bg-black/5 dark:hover:bg-white/10 transition-colors w-full sm:w-auto">
+                        A Note for You, Kandama
+                    </button>
+                </div>
+            </div>
+            
+            <div class="order-1 lg:order-2 flex justify-center lg:justify-end relative w-full px-2 sm:px-0">
+                <div class="absolute inset-0 bg-primary-light/5 dark:bg-primary-dark/5 rounded-[30px] sm:rounded-[40px] rotate-3 scale-105 transform -z-10"></div>
+                <div class="w-full max-w-[320px] sm:max-w-md shadow-elevation-4 rounded-xl sm:rounded-2xl overflow-hidden ring-1 ring-outline-light/10 dark:ring-outline-dark/10 transform -rotate-2 hover:rotate-0 transition-transform duration-500 cursor-pointer" onclick="document.getElementById('replay').scrollIntoView({ behavior: 'smooth' })">
+                    <div id="hero-board-container" class="w-full aspect-square"></div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="w-full overflow-hidden">
+        <section id="replay" class="py-10 sm:py-14 px-4 sm:px-6 max-w-6xl mx-auto w-full">
+            <div class="grid lg:grid-cols-5 gap-8 lg:gap-12 items-start">
+                
+                <!-- Left: Chessboard & Controls -->
+                <div class="lg:col-span-3 relative group w-full">
+                    <div id="main-board-container" class="relative w-full aspect-square rounded-xl overflow-hidden shadow-elevation-3 transition-shadow">
+                        <!-- Chessboard grid injected via JS -->
+                    </div>
+                    
+                    <!-- Controls -->
+                    <div class="mt-4 sm:mt-6 bg-surfaceContainer-light dark:bg-surfaceContainer-dark rounded-full p-2 flex items-center justify-between shadow-elevation-1">
+                        <div class="flex gap-1 sm:gap-2">
+                            <button id="btnPrev" class="p-2 sm:p-3 rounded-full hover:bg-black/5 dark:hover:bg-white/10 disabled:opacity-30 transition-colors">
+                                <i data-lucide="skip-back" class="w-5 h-5"></i>
+                            </button>
+                            <button id="btnPlayPause" class="p-2 sm:p-3 bg-primary-light dark:bg-primary-dark text-onPrimary-light dark:text-onPrimary-dark rounded-full hover:opacity-90 transition-opacity">
+                                <i data-lucide="play" id="iconPlayPause" class="w-5 h-5"></i>
+                            </button>
+                            <button id="btnNext" class="p-2 sm:p-3 rounded-full hover:bg-black/5 dark:hover:bg-white/10 disabled:opacity-30 transition-colors">
+                                <i data-lucide="skip-forward" class="w-5 h-5"></i>
+                            </button>
+                        </div>
+                        <div class="flex gap-2 pr-2">
+                            <button id="btnSound" class="p-2 sm:p-3 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors">
+                                <i data-lucide="volume-2" id="iconSound" class="w-5 h-5"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Info & Move List -->
+                <div class="lg:col-span-2 flex flex-col gap-6 w-full">
+                    <div class="bg-surfaceContainer-light dark:bg-surfaceContainer-dark p-5 sm:p-6 rounded-2xl sm:rounded-3xl shadow-elevation-1">
+                        <div class="flex items-center gap-3 mb-2">
+                            <span class="px-3 py-1 bg-primary-light/10 dark:bg-primary-dark/20 text-primary-light dark:text-primary-dark rounded-full text-xs font-bold tracking-wider uppercase">
+                                ♜ The Moment of Brilliance
+                            </span>
+                        </div>
+                        <h2 class="text-xl sm:text-2xl font-bold tracking-tight mb-2">A Victory Beyond Sight</h2>
+                        <p id="move-comment" class="text-secondary-light dark:text-secondary-dark text-sm leading-relaxed">
+                            <!-- Comment injected via JS -->
+                        </p>
+                    </div>
+
+                    <div class="bg-surfaceContainer-light dark:bg-surfaceContainer-dark rounded-2xl sm:rounded-3xl shadow-elevation-1 overflow-hidden flex-1">
+                        <div class="p-4 border-b border-outline-light/10 dark:border-outline-dark/10 bg-black/5 dark:bg-white/5">
+                            <h3 class="font-semibold text-sm tracking-wide">Move Record</h3>
+                        </div>
+                        <div id="move-list-container" class="p-2 overflow-y-auto max-h-[300px]">
+                            <!-- Moves injected via JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="pawn-story" class="py-10 sm:py-14 px-4 sm:px-6 bg-surfaceContainerLow-light dark:bg-surfaceContainerLow-dark w-full">
+            <div class="max-w-4xl mx-auto text-center w-full">
+                <span class="text-xs sm:text-sm font-bold tracking-widest text-primary-light dark:text-primary-dark uppercase mb-4 block">
+                    EVERY UNFORGETTABLE VICTORY HAS A BEGINNING
+                </span>
+                <h2 class="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight mb-6 sm:mb-8">
+                    Greatness Begins in the Mind
+                </h2>
+                <div class="max-w-2xl mx-auto">
+                    <p class="text-lg sm:text-xl leading-relaxed text-secondary-light dark:text-secondary-dark font-medium">
+                        “Others see hidden pieces; I see the patience, brilliance, and extraordinary mind of my Papu, turning the impossible into a victory I’ll cherish forever. ❤️♟️”
+                    </p>
+                </div>
+            </div>
+        </section>
+
+
+<section id="timeline" class="py-10 sm:py-14 px-4 sm:px-6 bg-surfaceContainer-light dark:bg-surfaceContainer-dark w-full">
+    <div class="max-w-5xl mx-auto w-full">
+        <h2 class="text-xl sm:text-2xl font-bold tracking-tight mb-8 sm:mb-12 text-center">♞ The Sequence of Brilliance</h2>
+        
+        <div class="relative">
+            <div class="absolute top-1/2 left-0 w-full h-1 bg-outline-light/20 dark:bg-outline-dark/20 -translate-y-1/2 hidden md:block rounded-full"></div>
+            <div class="absolute top-0 left-6 sm:left-8 w-1 h-full bg-outline-light/20 dark:bg-outline-dark/20 md:hidden rounded-full"></div>
+
+            <div class="flex flex-col md:flex-row justify-between gap-8 md:gap-4 relative z-10">
+                <!-- Step 1 -->
+                <div class="flex md:flex-col items-center gap-4 sm:gap-6 md:gap-4 flex-1 cursor-pointer group" onclick="goToMove(1)">
+                    <div class="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-primary-light text-onPrimary-light dark:bg-primary-dark dark:text-onPrimary-dark flex items-center justify-center font-bold text-lg sm:text-xl shadow-elevation-2 z-10 shrink-0 group-hover:scale-110 transition-transform">1</div>
+                    <div class="bg-surface-light dark:bg-surface-dark p-5 sm:p-6 rounded-2xl shadow-elevation-1 flex-1 md:w-full md:text-center text-left transition-colors group-hover:bg-primary-light/5 dark:group-hover:bg-primary-dark/10">
+                        <span class="text-sm font-bold text-primary-light dark:text-primary-dark block mb-1">Qd6+</span>
+                        <p class="text-sm text-secondary-light dark:text-secondary-dark">18. Qd6+ — the queen delivers check. Even with the pieces hidden, Papu finds the precise move.</p>
+                    </div>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="flex md:flex-col items-center gap-4 sm:gap-6 md:gap-4 flex-1 cursor-pointer group" onclick="goToMove(2)">
+                    <div class="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-primary-light text-onPrimary-light dark:bg-primary-dark dark:text-onPrimary-dark flex items-center justify-center font-bold text-lg sm:text-xl shadow-elevation-2 z-10 shrink-0 group-hover:scale-110 transition-transform">2</div>
+                    <div class="bg-surface-light dark:bg-surface-dark p-5 sm:p-6 rounded-2xl shadow-elevation-1 flex-1 md:w-full md:text-center text-left transition-colors group-hover:bg-primary-light/5 dark:group-hover:bg-primary-dark/10">
+                        <span class="text-sm font-bold text-primary-light dark:text-primary-dark block mb-1">Kb6</span>
+                        <p class="text-sm text-secondary-light dark:text-secondary-dark">18... Kb6 — the bot’s king retreats, while Papu’s plan continues to unfold.</p>
+                    </div>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="flex md:flex-col items-center gap-4 sm:gap-6 md:gap-4 flex-1 cursor-pointer group" onclick="goToMove(3)">
+                    <div class="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-primary-light text-onPrimary-light dark:bg-primary-dark dark:text-onPrimary-dark flex items-center justify-center font-bold text-lg sm:text-xl shadow-elevation-2 z-10 shrink-0 group-hover:scale-110 transition-transform">3</div>
+                    <div class="bg-surface-light dark:bg-surface-dark p-5 sm:p-6 rounded-2xl shadow-elevation-1 flex-1 md:w-full md:text-center text-left transition-colors group-hover:bg-primary-light/5 dark:group-hover:bg-primary-dark/10">
+                        <span class="text-sm font-bold text-primary-light dark:text-primary-dark block mb-1">Be3+</span>
+                        <p class="text-sm text-secondary-light dark:text-secondary-dark">19. Be3+ — another precise check brings the invisible battle closer to its unforgettable conclusion.</p>
+                    </div>
+                </div>
+
+                <!-- Step 4 -->
+                <div class="flex md:flex-col items-center gap-4 sm:gap-6 md:gap-4 flex-1 cursor-pointer group" onclick="goToMove(4)">
+                    <div class="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-primary-light text-onPrimary-light dark:bg-primary-dark dark:text-onPrimary-dark flex items-center justify-center font-bold text-lg sm:text-xl shadow-elevation-2 z-10 shrink-0 group-hover:scale-110 transition-transform">4</div>
+                    <div class="bg-surface-light dark:bg-surface-dark p-5 sm:p-6 rounded-2xl shadow-elevation-1 flex-1 md:w-full md:text-center text-left transition-colors group-hover:bg-primary-light/5 dark:group-hover:bg-primary-dark/10">
+                        <span class="text-sm font-bold text-primary-light dark:text-primary-dark block mb-1">Ka5</span>
+                        <p class="text-sm text-secondary-light dark:text-secondary-dark">19... Ka5 — the king makes its final escape, and Papu prepares the decisive move.</p>
+                    </div>
+                </div>
+
+                <!-- Final Move -->
+                <div class="flex md:flex-col items-center gap-4 sm:gap-6 md:gap-4 flex-1 cursor-pointer group" onclick="goToMove(5)">
+                    <div class="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-primary-light text-onPrimary-light dark:bg-primary-dark dark:text-onPrimary-dark flex items-center justify-center font-bold text-lg sm:text-xl shadow-elevation-2 z-10 shrink-0 group-hover:scale-110 transition-transform">♛</div>
+                    <div class="bg-surface-light dark:bg-surface-dark p-5 sm:p-6 rounded-2xl shadow-elevation-1 flex-1 md:w-full md:text-center text-left transition-colors group-hover:bg-primary-light/5 dark:group-hover:bg-primary-dark/10">
+                        <span class="text-sm font-bold text-primary-light dark:text-primary-dark block mb-1">Qa3#</span>
+                        <p class="text-sm text-secondary-light dark:text-secondary-dark">20. Qa3# — CHECKMATE! A brilliant mind, an invisible battlefield, and a victory I’ll cherish forever. My beloved Papu. ❤️</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+        <section id="trophy" class="chess-accent py-8 sm:py-10 px-4 sm:px-6 text-center w-full">
+            <div class="max-w-2xl mx-auto w-full">
+                <div class="relative inline-block mb-3">
+                    <div class="absolute inset-0 bg-primaryGold opacity-20 blur-2xl rounded-full"></div>
+                    <i data-lucide="trophy" class="w-16 h-16 sm:w-20 sm:h-20 text-primaryGold relative z-10 mx-auto" stroke-width="1.5"></i>
+                </div>
+                <h2 class="text-2xl sm:text-3xl font-bold tracking-tight mb-2 uppercase">
+                    MY PERSONAL BLIND-CHESS LEGEND
+                </h2>
+                <p class="text-base sm:text-lg text-secondary-light dark:text-secondary-dark">
+                    No trophy could ever measure the pride I feel in you, my Papu. ❤️♟️
+                </p>
+            </div>
+        </section>
+
+        <section id="love-letter" class="py-10 sm:py-16 px-4 sm:px-6 relative overflow-hidden w-full">
+            <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-3xl h-full opacity-5 pointer-events-none">
+                <i data-lucide="heart" class="absolute top-10 left-4 sm:left-10 w-16 h-16 sm:w-24 sm:h-24"></i>
+                <i data-lucide="heart" class="absolute bottom-10 right-4 sm:right-10 w-24 h-24 sm:w-32 sm:h-32"></i>
+            </div>
+
+            <div class="love-card max-w-3xl mx-auto bg-surface-light dark:bg-surface-dark rounded-[24px] sm:rounded-[32px] p-5 sm:p-8 md:p-10 shadow-elevation-2 relative z-10 w-full">
+                <div class="flex justify-center mb-6 sm:mb-8">
+                    <div class="heart-medallion w-12 h-12 sm:w-16 sm:h-16 rounded-full flex items-center justify-center">
+                        <i data-lucide="heart" class="w-6 h-6 sm:w-8 sm:h-8 text-red-500 fill-red-500 heart-icon"></i>
+                    </div>
+                </div>
+                <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-center mb-5 sm:mb-7 tracking-tight normal-case">
+                    One game, so many feelings, 🫀
+                </h2>
+                
+                <div class="letter-copy space-y-4 sm:space-y-5 text-base sm:text-lg md:text-xl leading-relaxed text-onSurface-light dark:text-onSurface-dark font-medium">
+<p>I'm infinity astu, so, so, so proud of you, my Kandamaa! 🫡🫀</p>
+<p>Really, Ninantha est best precious nan muddina Ganda, nan Papu Devru, Kandama! Ninna padiyoke nanu thumba thumba thumba thumba thumba thumba thumba thumba thumba thumba thumba thumba infinity astu punya madedini, Papu preciousss Kandama! 💎🫂🫀🔐✨</p>
+<p>Once again, heartfelt congratulations, Kandama! Congratulations! 🥹🏆🏆🏆🏆🏆
+</p>
+                </div>
+                
+                <div class="mt-8 pt-5 border-t border-outline-light/20 dark:border-outline-dark/20 text-center">
+                    <p class="text-secondary-light dark:text-secondary-dark italic">
+                        Forever proud of you. Forever cheering for you. Forever yours. ❤️<br/>
+                        <span class="font-bold mt-2 block not-italic text-onSurface-light dark:text-onSurface-dark">— Your Wife</span>
+                    </p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="py-5 px-4 text-center text-sm text-secondary-light dark:text-secondary-dark border-t border-outline-light/10 dark:border-outline-dark/10"><p class="font-semibold tracking-wide">CSourworldforever 🫀</p></footer>
+
+    <script>
+        // --- System State & Engine ---
+        let currentIndex = 0;
+        let isPlaying = false;
+        let soundEnabled = true;
+        let isDark = false;
+        let playTimer = null;
+        let checkmateRevealReady = false;
+        let checkmateTimer = null;
+
+        // --- Custom Web Audio API Synthesizer ---
+        class AudioEngine {
+            constructor() {
+                this.ctx = null;
+                this.enabled = true;
+            }
+            
+            init() {
+                if (!this.ctx) {
+                    this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+            }
+
+            toggle() {
+                this.enabled = !this.enabled;
+                if (this.enabled && this.ctx && this.ctx.state === 'suspended') {
+                    this.ctx.resume();
+                }
+                return this.enabled;
+            }
+
+            playTone(freq, type, duration, vol) {
+                if (!this.enabled) return;
+                this.init();
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = type;
+                osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+                
+                gain.gain.setValueAtTime(vol, this.ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + duration);
+                
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start();
+                osc.stop(this.ctx.currentTime + duration);
+            }
+
+            playMove() {
+                this.playTone(300, 'sine', 0.1, 0.1);
+                setTimeout(() => this.playTone(400, 'sine', 0.15, 0.05), 50);
+            }
+
+            playCheckmate() {
+                if (!this.enabled) return;
+                const notes = [440, 554.37, 659.25, 880]; // A4, C#5, E5, A5
+                notes.forEach((freq, i) => {
+                    setTimeout(() => this.playTone(freq, 'triangle', 0.8, 0.1), i * 150);
+                });
+            }
+        }
+        const audio = new AudioEngine();
+
+        // --- Game Data ---
+        // Verified exact board states matching image_f66bf5.jpg
+        // Blind-chess tribute: pieces are deliberately hidden during the replay.
+        // The final position is revealed in full after 20. Qa3#.
+        const GAME_SEQUENCE = [
+            { fen: 'r1b3r1/1pKp3p/p1p3pP/4p1B1/4P3/Q6N/PPP2P1P/2KR1B1R', notation: 'Start', turn: 'w', lastMove: null, comment: 'With every piece hidden, you trusted your mind and mastered the board. One extraordinary checkmate turned an invisible battle into a memory I’ll cherish forever, my Kandama ❤️.' },
+            { fen: 'r1b3r1/1pKp3p/p1pQ2pP/4p1B1/4P3/7N/PPP2P1P/2KR1B1R', notation: 'Qd6+', turn: 'b', lastMove: { from: 'a3', to: 'd6' }, comment: '18. Qd6+ — the queen delivers check. Can the bot find a safe square?' },
+            { fen: 'r1b3r1/1p1p3p/pKpQ2pP/4p1B1/4P3/7N/PPP2P1P/2KR1B1R', notation: 'Kb6', turn: 'w', lastMove: { from: 'c7', to: 'b6' }, comment: '18... Kb6 — the king steps to b6. The blind-chess position changes, but the pieces stay concealed.' },
+            { fen: 'r1b3r1/1p1p3p/pKpQ2pP/4p3/4P3/4B2N/PPP2P1P/2KR1B1R', notation: 'Be3+', turn: 'b', lastMove: { from: 'g5', to: 'e3' }, comment: '19. Be3+ — another check. The move is shown, while every piece remains a hidden marker.' },
+            { fen: 'r1b3r1/1p1p3p/p1pQ2pP/k3p3/4P3/4B2N/PPP2P1P/2KR1B1R', notation: 'Ka5', turn: 'w', lastMove: { from: 'b6', to: 'a5' }, comment: '19... Ka5 — the king moves to a5. One final move remains.' },
+            { fen: 'r1b3r1/1p1p3p/p1p3pP/k3p3/4P3/Q3B2N/PPP2P1P/2KR1B1R', notation: 'Qa3#', turn: 'b', lastMove: { from: 'd6', to: 'a3' }, isCheckmate: true, revealPieces: true, comment: '20. Qa3# — CHECKMATE! The full position is revealed to celebrate Papu’s blind-chess victory against the bot.' }
+        ];
+
+        // --- Helper Functions ---
+        const parseFEN = (fen) => {
+            const rows = fen.split(' ')[0].split('/');
+            const board = [];
+            for (let r = 0; r < 8; r++) {
+                const row = [];
+                for (let i = 0; i < rows[r].length; i++) {
+                    const char = rows[r][i];
+                    if (isNaN(char)) row.push(char);
+                    else { for (let j = 0; j < parseInt(char); j++) row.push(null); }
+                }
+                board.push(row);
+            }
+            return board;
+        };
+
+        let renderingStateIndex = 0;
+        const getPieceSVG = (type) => {
+            if (!type) return '';
+            const isWhite = type === type.toUpperCase();
+            // Chess.com-style blind-chess markers during every replay frame.
+            // Only the final frame reveals the real piece identities.
+            const revealPieces = !!GAME_SEQUENCE[renderingStateIndex]?.revealPieces;
+            if (!revealPieces) {
+                const fill = isWhite ? '#f7f7f7' : '#383536';
+                const stroke = isWhite ? '#777777' : '#171717';
+                const ring = isWhite ? '#ffffff' : '#5b5758';
+                return `<svg viewBox="0 0 100 100" class="w-full h-full drop-shadow-md" aria-label="Hidden chess piece"><circle cx="50" cy="50" r="43" fill="${fill}" stroke="${stroke}" stroke-width="4"/><circle cx="50" cy="50" r="34" fill="none" stroke="${ring}" stroke-width="3" opacity=".8"/><circle cx="50" cy="50" r="25" fill="none" stroke="${ring}" stroke-width="3" opacity=".65"/><circle cx="50" cy="50" r="16" fill="none" stroke="${ring}" stroke-width="3" opacity=".5"/></svg>`;
+            }
+            const symbols = { K: '♔', Q: '♕', R: '♖', B: '♗', N: '♘', P: '♙', k: '♚', q: '♛', r: '♜', b: '♝', n: '♞', p: '♟' };
+            if (symbols[type]) {
+                const color = isWhite ? '#fffaf0' : '#262323';
+                const stroke = isWhite ? '#514b43' : '#e5ded2';
+                return `<svg viewBox="0 0 100 100" class="w-full h-full drop-shadow-md" aria-label="${isWhite ? 'White' : 'Black'} chess piece"><text x="50" y="77" text-anchor="middle" font-size="82" font-family="DejaVu Sans, Segoe UI Symbol, Noto Sans Symbols, serif" fill="${color}" stroke="${stroke}" stroke-width="1.3" paint-order="stroke fill">${symbols[type]}</text></svg>`;
+            }
+            const baseColor = isWhite ? "#ffffff" : "#222222";
+            const strokeColor = isWhite ? "#000000" : "#ffffff";
+            const strokeWidth = isWhite ? "1.5" : "1";
+            const monogram = isWhite ? "CS" : "SC";
+            const monogramColor = isWhite ? "#111111" : "#FFFFFF";
+            const style = `fill:${baseColor};stroke:${strokeColor};stroke-width:${strokeWidth};`;
+            
+            switch (type.toLowerCase()) {
+                case 'k':
+                    return `<svg viewBox="0 0 45 45" class="w-full h-full drop-shadow-md">
+                        <path d="M 22.5,11.63 L 22.5,6" style="fill:none;stroke:${strokeColor};stroke-linejoin:miter" />
+                        <path d="M 20,8 L 25,8" style="fill:none;stroke:${strokeColor};stroke-linejoin:miter" />
+                        <path d="M 22.5,25 C 22.5,25 27,17.5 25.5,14.5 C 25.5,14.5 24.5,12 22.5,12 C 20.5,12 19.5,14.5 19.5,14.5 C 18,17.5 22.5,25 22.5,25" style="${style}stroke-linecap:butt;stroke-linejoin:miter" />
+                        <path d="M 11.5,37 C 17,40.5 28,40.5 33.5,37 L 33.5,30 C 33.5,30 41.5,27.5 38.5,19.5 C 34.5,13 25,16 22.5,23.5 L 22.5,27 L 22.5,23.5 C 19,16 9.5,13 6.5,19.5 C 3.5,27.5 11.5,30 11.5,30 L 11.5,37" style="${style}" />
+                        <path d="M 11.5,30 C 17,27 28,27 33.5,30" style="fill:none;stroke:${strokeColor}" />
+                        <path d="M 11.5,33.5 C 17,31.5 28,31.5 33.5,33.5" style="fill:none;stroke:${strokeColor}" />
+                        <path d="M 11.5,37 C 17,39 28,39 33.5,37" style="fill:none;stroke:${strokeColor}" />
+                        <text x="22.5" y="28.1" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="5.4" font-weight="900" letter-spacing=".1" fill="${monogramColor}" stroke="${isWhite ? "#FFFFFF" : "#111111"}" stroke-width=".24" paint-order="stroke fill">${monogram}</text>
+                    </svg>`;
+                case 'r':
+                    return `<svg viewBox="0 0 45 45" class="w-full h-full drop-shadow-md">
+                        <path d="M 9,39 L 36,39 L 36,36 L 9,36 L 9,39 z " style="${style}" />
+                        <path d="M 12,36 L 12,32 L 33,32 L 33,36 L 12,36 z " style="${style}" />
+                        <path d="M 11,14 L 11,9 L 15,9 L 15,11 L 20,11 L 20,9 L 25,9 L 25,11 L 30,11 L 30,9 L 34,9 L 34,14" style="${style}" />
+                        <path d="M 34,14 L 31,17 L 14,17 L 11,14" style="${style}" />
+                        <path d="M 31,17 L 31,29.5 L 14,29.5 L 14,17" style="${style}" />
+                        <path d="M 31,29.5 L 32.5,32 L 12.5,32 L 14,29.5" style="${style}" />
+                        <path d="M 11,14 L 34,14" style="fill:none;stroke:${strokeColor}" />
+                        <text x="22.5" y="24.1" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="5.4" font-weight="900" letter-spacing=".1" fill="${monogramColor}" stroke="${isWhite ? "#FFFFFF" : "#111111"}" stroke-width=".24" paint-order="stroke fill">${monogram}</text>
+                    </svg>`;
+                case 'p':
+                    return `<svg viewBox="0 0 45 45" class="w-full h-full drop-shadow-md">
+                        <path d="M 22.5,9 C 19.5,9 17.5,11 17.5,14 C 17.5,17 20,19 22.5,19 C 25,19 27.5,17 27.5,14 C 27.5,11 25.5,9 22.5,9 z" style="${style}" />
+                        <path d="M 22.5,19 C 15,21 14,29 14,29 L 31,29 C 31,29 30,21 22.5,19 z" style="${style}" />
+                        <path d="M 11,37 C 11,37 13,34 16,34 L 29,34 C 32,34 34,37 34,37 L 11,37 z" style="${style}" />
+                        <path d="M 14,29 C 14,29 16,31 22.5,31 C 29,31 31,29 31,29" style="fill:none;stroke:${strokeColor}" />
+                        <path d="M 14,29 L 16,34" style="fill:none;stroke:${strokeColor}" />
+                        <path d="M 31,29 L 29,34" style="fill:none;stroke:${strokeColor}" />
+                    <text x="22.5" y="34.2" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="5.4" font-weight="900" letter-spacing=".1" fill="${monogramColor}" stroke="${isWhite ? "#FFFFFF" : "#111111"}" stroke-width=".24" paint-order="stroke fill">${monogram}</text></svg>`;
+                default: return '';
+            }
+        };
+
+        // --- STREAMING_CHUNK:Rendering the Chessboard & UI ---
+        const updateCheckmateOverlay = (container, interactive, isCheckmate) => {
+            let overlay = container.querySelector('#mate-overlay');
+            if (isCheckmate && interactive) {
+                if (!overlay) {
+                    let particles = '';
+                    for(let i=0; i<40; i++) {
+                        particles += `<div class="absolute w-2 h-2 rounded-full opacity-0 animate-float" style="left:${Math.random()*100}%; top:${Math.random()*100}%; animation-delay:${Math.random()*1.5}s; animation-duration:${2+Math.random()*2}s; background-color:${Math.random()>0.5?'#FBBC04':'#FFFFFF'}"></div>`;
+                    }
+                    overlay = document.createElement('div');
+                    overlay.id = 'mate-overlay';
+                    overlay.className = 'absolute inset-0 z-40 flex flex-col items-center justify-center bg-black/60 backdrop-blur-sm rounded-xl animate-fade-in';
+                    overlay.innerHTML = `
+                        <div class="absolute inset-0 pointer-events-none overflow-hidden rounded-xl z-50">${particles}</div>
+                        <div class="mate-card bg-surface-light dark:bg-surface-dark p-6 sm:p-8 rounded-2xl sm:rounded-3xl shadow-elevation-4 text-center max-w-[90%] sm:max-w-sm mx-4 z-50 ring-2 ring-primaryGold/60">
+                            <div class="relative w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-4">
+                                <div class="absolute inset-0 bg-primaryGold opacity-20 rounded-full blur-xl animate-pulse"></div>
+                                <i data-lucide="crown" class="w-full h-full text-primaryGold relative z-10 animate-bounce-slight mate-glow drop-shadow-md"></i>
+                            </div>
+                            <h3 class="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight text-onSurface-light dark:text-onSurface-dark mb-2">CHECKMATE</h3>
+                            <p class="text-primary-light dark:text-primary-dark font-bold text-sm sm:text-base tracking-widest mb-4">THAT’S MY GENIUS PAPU. 👑</p>
+                            <p class="text-sm text-secondary-light dark:text-secondary-dark mb-6">You didn’t just play a game; you created a memory I’ll treasure forever.</p>
+                            <button onclick="handleRestart()" class="bg-primary-light dark:bg-primary-dark text-onPrimary-light dark:text-onPrimary-dark px-5 sm:px-6 py-3 rounded-full font-medium hover:opacity-90 hover:scale-105 transition-all flex items-center justify-center w-full gap-2 text-sm sm:text-base shadow-elevation-2">
+                                <i data-lucide="rotate-ccw" class="w-4 h-4"></i> Watch that moment again
+                            </button>
+                        </div>`;
+                    container.appendChild(overlay);
+                    lucide.createIcons();
+                }
+            } else if (overlay) {
+                overlay.remove();
+            }
+        };
+
+        const renderBoard = (stateIndex, containerId, interactive = false) => {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+
+            const currentState = GAME_SEQUENCE[stateIndex];
+            renderingStateIndex = stateIndex;
+            const board = parseFEN(currentState.fen);
+            const lightSquare = isDark ? '#D4B895' : '#E8D0AA';
+            const darkSquare = isDark ? '#8B5A2B' : '#A67C52';
+            
+            let html = `<div class="absolute inset-0 grid grid-cols-8 grid-rows-8 z-0">`;
+            for (let r = 0; r < 8; r++) {
+                for (let c = 0; c < 8; c++) {
+                    const bgColor = (r + c) % 2 === 0 ? lightSquare : darkSquare;
+                    const coordColorClass = (r + c) % 2 === 0 ? 'text-[#8B5A2B]' : 'text-[#D4B895]';
+                    let coordsHTML = '';
+                    if (c === 0) coordsHTML += `<span class="absolute top-0.5 left-0.5 sm:top-1 sm:left-1 text-[8px] sm:text-[10px] font-bold ${coordColorClass}">${8 - r}</span>`;
+                    if (r === 7) coordsHTML += `<span class="absolute bottom-0.5 right-0.5 sm:bottom-1 sm:right-1 text-[8px] sm:text-[10px] font-bold ${coordColorClass}">${String.fromCharCode(97 + c)}</span>`;
+                    
+                    html += `<div class="relative flex items-center justify-center transition-colors duration-300" style="background-color: ${bgColor}">`;
+                    html += coordsHTML;
+                    
+                    // Highlight logic
+                    if (currentState.lastMove) {
+                        const files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+                        const fromF = files.indexOf(currentState.lastMove.from[0]);
+                        const fromR = 8 - parseInt(currentState.lastMove.from[1]);
+                        const toF = files.indexOf(currentState.lastMove.to[0]);
+                        const toR = 8 - parseInt(currentState.lastMove.to[1]);
+                        
+                        if ((r === fromR && c === fromF) || (r === toR && c === toF)) {
+                            html += `<div class="absolute inset-0 bg-yellow-400 opacity-40 mix-blend-multiply"></div>`;
+                        }
+                    }
+                    
+                    const piece = board[r][c];
+                    if (piece) {
+                        let movingClass = '';
+                        let moveStyle = '';
+                        if (currentState.lastMove && currentState.lastMove.to[0] === String.fromCharCode(97 + c) &&
+                            parseInt(currentState.lastMove.to[1], 10) === 8 - r) {
+                            const files = ['a','b','c','d','e','f','g','h'];
+                            const fromF = files.indexOf(currentState.lastMove.from[0]);
+                            const fromR = 8 - parseInt(currentState.lastMove.from[1], 10);
+                            const toF = files.indexOf(currentState.lastMove.to[0]);
+                            const toR = 8 - parseInt(currentState.lastMove.to[1], 10);
+                            const cell = container.clientWidth / 8;
+                            const dx = (fromF - toF) * cell;
+                            const dy = (fromR - toR) * cell;
+                            movingClass = ' piece-moving';
+                            moveStyle = ` style="--move-x:${dx}px;--move-y:${dy}px"`;
+                        }
+                        html += `<div class="piece w-[85%] h-[85%] z-10 drop-shadow-md${movingClass}"${moveStyle}>${getPieceSVG(piece)}</div>`;
+                    }
+                    
+                    html += `</div>`;
+                }
+            }
+            html += `</div>`;
+
+            container.innerHTML = html;
+            updateCheckmateOverlay(container, interactive, Boolean(currentState.isCheckmate) && checkmateRevealReady);
+            lucide.createIcons();
+        };
+
+        const renderMoveList = () => {
+            const container = document.getElementById('move-list-container');
+            let html = '';
+            for (let i = 1; i < GAME_SEQUENCE.length; i += 2) {
+                const whiteMove = GAME_SEQUENCE[i];
+                const blackMove = GAME_SEQUENCE[i + 1] || null;
+                const turnNum = 18 + Math.floor((i - 1) / 2);
+                
+                const activeClasses = 'bg-primary-light/20 text-primary-light font-bold dark:bg-primary-dark/30 dark:text-primary-dark';
+                
+                html += `
+                <div class="flex text-sm py-2 px-4 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
+                    <div class="w-8 font-medium text-secondary-light dark:text-secondary-dark">${turnNum}.</div>
+                    <div class="flex-1 cursor-pointer px-2 rounded ${i === currentIndex ? activeClasses : ''}" onclick="goToMove(${i})">${whiteMove.notation}</div>
+                    ${blackMove ? `<div class="flex-1 cursor-pointer px-2 rounded ${i+1 === currentIndex ? activeClasses : ''}" onclick="goToMove(${i+1})">${blackMove.notation}</div>` : '<div class="flex-1"></div>'}
+                </div>`;
+            }
+            container.innerHTML = html;
+        };
+
+        const updateUI = () => {
+            renderBoard(currentIndex, 'main-board-container', true);
+            renderMoveList();
+            
+            document.getElementById('move-comment').innerText = GAME_SEQUENCE[currentIndex].comment;
+            
+            const btnPrev = document.getElementById('btnPrev');
+            const btnNext = document.getElementById('btnNext');
+            const btnPlayPause = document.getElementById('btnPlayPause');
+            const iconPlayPause = document.getElementById('iconPlayPause');
+            
+            btnPrev.disabled = currentIndex === 0;
+            btnNext.disabled = currentIndex === GAME_SEQUENCE.length - 1;
+            
+            iconPlayPause.setAttribute('data-lucide', isPlaying ? 'pause' : 'play');
+            lucide.createIcons();
+        };
+
+        // --- Game Logic & Event Listeners ---
+        const clearCheckmateTimer = () => {
+            if (checkmateTimer) {
+                clearTimeout(checkmateTimer);
+                checkmateTimer = null;
+            }
+        };
+
+        const showCheckmateAfterDelay = () => {
+            clearCheckmateTimer();
+            checkmateRevealReady = false;
+            updateUI(); // Show the final board first, with all pieces visible.
+            checkmateTimer = setTimeout(() => {
+                // Only reveal the overlay if the user is still on the final move.
+                if (GAME_SEQUENCE[currentIndex]?.isCheckmate) {
+                    checkmateRevealReady = true;
+                    updateUI();
+                    if (soundEnabled) audio.playCheckmate();
+                }
+                checkmateTimer = null;
+            }, 500);
+        };
+
+        const handleNext = () => {
+            if (currentIndex >= GAME_SEQUENCE.length - 1) return;
+            currentIndex++;
+            if (soundEnabled) audio.playMove();
+            if (GAME_SEQUENCE[currentIndex].isCheckmate) {
+                isPlaying = false;
+                clearTimeout(playTimer);
+                showCheckmateAfterDelay();
+                return;
+            }
+            checkmateRevealReady = false;
+            clearCheckmateTimer();
+            updateUI();
+        };
+
+        const handlePrev = () => {
+            if (currentIndex > 0) {
+                currentIndex--;
+                checkmateRevealReady = false;
+                clearCheckmateTimer();
+                if (soundEnabled) audio.playMove();
+                updateUI();
+            }
+        };
+
+        window.goToMove = (index) => {
+            if (index < 0 || index >= GAME_SEQUENCE.length || index === currentIndex) return;
+            clearTimeout(playTimer);
+            clearCheckmateTimer();
+            currentIndex = index;
+            isPlaying = false;
+            checkmateRevealReady = false;
+            if (soundEnabled) audio.playMove();
+            if (GAME_SEQUENCE[currentIndex].isCheckmate) {
+                showCheckmateAfterDelay();
+                return;
+            }
+            updateUI();
+        };
+
+        window.handleRestart = () => {
+            clearTimeout(playTimer);
+            clearCheckmateTimer();
+            currentIndex = 0;
+            checkmateRevealReady = false;
+            isPlaying = true;
+            updateUI();
+            playTimer = setTimeout(() => gameLoop(), 800);
+        };
+
+        const gameLoop = () => {
+            if (isPlaying && currentIndex < GAME_SEQUENCE.length - 1) {
+                playTimer = setTimeout(() => {
+                    handleNext();
+                    if (isPlaying) gameLoop();
+                }, 1500);
+            } else if (isPlaying && currentIndex === GAME_SEQUENCE.length - 1) {
+                isPlaying = false;
+                updateUI();
+            }
+        };
+
+        document.getElementById('btnPlayPause').addEventListener('click', () => {
+            if (isPlaying) {
+                isPlaying = false;
+                clearTimeout(playTimer);
+                updateUI();
+                return;
+            }
+            clearCheckmateTimer();
+            checkmateRevealReady = false;
+            if (currentIndex === GAME_SEQUENCE.length - 1) currentIndex = 0;
+            isPlaying = true;
+            audio.init();
+            updateUI();
+            gameLoop();
+        });
+
+        document.getElementById('btnPrev').addEventListener('click', () => {
+            isPlaying = false;
+            clearTimeout(playTimer);
+            handlePrev();
+        });
+
+        document.getElementById('btnNext').addEventListener('click', () => {
+            isPlaying = false;
+            clearTimeout(playTimer);
+            handleNext();
+        });
+
+        document.getElementById('btnSound').addEventListener('click', () => {
+            soundEnabled = audio.toggle();
+            document.getElementById('iconSound').setAttribute('data-lucide', soundEnabled ? 'volume-2' : 'volume-x');
+            lucide.createIcons();
+        });
+
+        // --- STREAMING_CHUNK:Theme Initialization ---
+        const toggleTheme = () => {
+            isDark = !isDark;
+            document.documentElement.classList.toggle('dark', isDark);
+            document.getElementById('themeIcon').setAttribute('data-lucide', isDark ? 'sun' : 'moon');
+            renderBoard(1, 'hero-board-container', false); // Keep hero board in blind-chess hidden-piece style
+            updateUI(); // Update main board colors without piece transition
+        };
+
+        document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+
+        // On Load
+        window.addEventListener('DOMContentLoaded', () => {
+            
+            lucide.createIcons();
+            
+            // Render static hero board using hidden-piece markers.
+            renderBoard(1, 'hero-board-container');
+            
+            // Render interactive board
+            updateUI();
+        });
+    </script>
+</body>
+</html>
